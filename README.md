@@ -10,4 +10,4 @@ Completed SoftServe IT Academy's "Advanced Testing: Practice on Project" course 
 
 ## Approach
 
-Every file here favors honesty over polish: alongside working solutions, I document the mistakes I made getting there and why they happened, the same way I'd write up a bug. That process is on record in [`sql/sql_practice.md`](./sql/sql_practice.md) and in the VictoryCenter API testing notes in [`api/README.md`](./api).
+Every file here favors honesty over polish: alongside working solutions, I document the mistakes I made getting there and why they happened, the same way I'd write up a bug. That process is on record in [`sql/sql_practice.md`](./sql/sql_practice.md).
