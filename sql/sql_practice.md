@@ -72,6 +72,26 @@ LEFT JOIN Employee m ON e.id = m.managerId
 WHERE m.salary > e.salary AND m.managerId IS NOT NULL;
 ```
 
+### 5. Self JOIN + GROUP BY: кількість підлеглих і їхній середній вік (LeetCode 1731, MySQL)
+```sql
+-- Задача: для кожного менеджера вивести кількість прямих підлеглих
+-- і їхній середній вік, округлений до цілого, з сортуванням по employee_id
+-- Пастка: спершу згрупував по e.reports_to, тобто менеджерів за ЇХНІМ начальником.
+-- Alice і Bob обидва підпорядковані Michael, тому злились в одну групу:
+-- Bob зник з результату, а в Alice вийшло 3 підлеглих замість 2.
+-- Урок: GROUP BY має йти по тому, для кого рахуємо результат (менеджер e).
+-- Механіка: e.employee_id = r.reports_to робить e менеджером, а r підлеглим.
+-- INNER JOIN відкидає тих, у кого немає підлеглих, і це якраз потрібно.
+-- ROUND(AVG(x)) без другого аргументу округляє до цілого.
+SELECT e.employee_id, e.name,
+       COUNT(r.reports_to) AS reports_count,
+       ROUND(AVG(r.age)) AS average_age
+FROM Employees e
+JOIN Employees r ON e.employee_id = r.reports_to
+GROUP BY e.employee_id
+ORDER BY employee_id;
+```
+
 ## Aggregation: COUNT, SUM, GROUP BY
 
 ### 1. Кількість працівників по ролях
@@ -107,4 +127,21 @@ SELECT movies.director,
 FROM movies
 LEFT JOIN boxoffice ON movies.id = boxoffice.movie_id
 GROUP BY movies.director;
+```
+
+### 4. COUNT(DISTINCT): унікальні предмети кожного вчителя (LeetCode 2356, MySQL)
+```sql
+-- Задача: для кожного вчителя порахувати кількість унікальних предметів
+-- Пастка 1: спершу згрупував по dept_id і додав HAVING cnt != 1.
+-- На прикладі цифри збіглися випадково і тест пройшов, але логіка неправильна.
+-- Урок: один пройдений тест не доводить, що запит правильний.
+-- Пастка 2: написав DISTINCT COUNT(...) замість COUNT(DISTINCT ...),
+-- це синтаксична помилка. DISTINCT пишеться всередині дужок.
+-- Пастка 3: рахував dept_id (кафедри) замість subject_id (предмети).
+-- Механіка: COUNT(DISTINCT subject_id) дивиться тільки на subject_id,
+-- а не на весь рядок. Рядки (1, 2, 3) і (1, 2, 4) дають той самий предмет 2,
+-- тому він рахується один раз.
+SELECT teacher_id, COUNT(DISTINCT subject_id) AS cnt
+FROM Teacher
+GROUP BY teacher_id;
 ```
